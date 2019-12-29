@@ -1,19 +1,16 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from restaurants.api.serializers import UserSerializer, GroupSerializer
+from .models import Restaurant
+from rest_framework import viewsets, filters
+from restaurants.api.serializers import RestaurantSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class RestaurantViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to view restaruants.
     """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantSerializer
+    lookup_field = 'slug'
+    http_method_names = ['get']
 
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
