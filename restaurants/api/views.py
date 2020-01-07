@@ -1,8 +1,9 @@
-from .models import Restaurant
+from .models import Restaurant, Review
 from datetime import datetime
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
-from restaurants.api.serializers import RestaurantSerializer, RestaurantListSerializer
+from rest_framework.decorators import action
+from restaurants.api.serializers import RestaurantSerializer, RestaurantListSerializer, ReviewSerializer
 
 class ActionBaseSerializerMixin(viewsets.ModelViewSet):
     """
@@ -63,7 +64,7 @@ class RestaurantViewSet(ActionBaseSerializerMixin, StatusFilterMixin):
         'retrieve': RestaurantSerializer,
     }
     lookup_field = 'slug'
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
@@ -112,3 +113,18 @@ class RestaurantViewSet(ActionBaseSerializerMixin, StatusFilterMixin):
 
 
         return self.queryset
+
+    @action(detail=True, methods=['put'])
+    def review(self, request, *args, **kwargs):
+        restaurant = self.get_object()
+        # request.data['restaurant_id'] = restaurant.id
+        serializer = ReviewSerializer(restaurant, data = request.data)
+
+        if serializer.is_valid():
+            # for i in request.data['reviews']
+            Review.objects.create(review = request.data['review'], rating = request.data['rating'], restaurant_id= restaurant.id )
+            # serializer.save()
+            return Response({'success': 'Reviewed!'})
+        else:
+            return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)

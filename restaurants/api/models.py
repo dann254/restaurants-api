@@ -38,44 +38,19 @@ class Restaurant(models.Model):
         return False
 
     @property
-    def schedule_change_time(self):
-        now = timezone.localtime()
-        current_time = now.time()
-        today = now.isoweekday()
-        schedule = self.schedules.filter(weekday__iso_weekday = today).first()
-        midnight = datetime.strptime('00:00:00', '%H:%M:%S').time()
+    def review_count(self):
+        reviews = self.reviews.all()
+        return len(reviews)
 
-        if schedule is None:
-            tomorrow = self.tomorrow(today)
-            return tomorrow.opening_time
-
-        if schedule.opening_time < schedule.closing_time:
-            if current_time >= schedule.opening_time and current_time < schedule.closing_time:
-                return schedule.closing_time
-
-            if current_time > schedule.closing_time:
-                tomorrow = self.tomorrow(today)
-                if schedule is None:
-                    tomorrow = self.tomorrow(tomorrow)
-                    return tomorrow.opening_time
-                return tomorrow.opening_time
-
-        elif schedule.add_overflow:
-            if current_time >= midnight and current_time <= schedule.add_overflow:
-                return schedule.overflow
-            if current_time <= schedule.opening_time and current_time > schedule.add_overflow:
-                return schedule.opening_time
-
-        else:
-            if current_time >= schedule.opening_time and current_time < midnight:
-                return schedule.closing_time
-
-            if current_time < schedule.opening_time and current_time >= midnight:
-                return schedule.opening_time
-
-        return schedule.opening_time
-
-
+    @property
+    def rating_average(self):
+        reviews = self.reviews.all()
+        rating = 0
+        for review in reviews:
+            rating += review.rating
+        if rating != 0:
+            return round(rating/len(reviews), 1)
+        return 0.0
 
     def tomorrow(self, today):
         return self.schedules.filter(weekday__iso_weekday = today+1).first()
@@ -106,3 +81,10 @@ class Schedule(models.Model):
     class Meta:
         unique_together = ['restaurant', 'weekday']
         ordering = ['weekday__iso_weekday']
+
+class Review(models.Model):
+    rating = models.FloatField(unique=False, blank=False, null=False)
+    review = models.TextField(unique=False, blank=False, null=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    restaurant = models.ForeignKey(Restaurant, related_name='reviews', on_delete=models.CASCADE)
