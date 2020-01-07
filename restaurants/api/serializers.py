@@ -20,7 +20,17 @@ class RestaurantSerializer(serializers.ModelSerializer):
     open = serializers.ReadOnlyField()
     class Meta:
         model = Restaurant
-        fields = ['url', 'name', 'open',  'schedules']
+        fields = ['url', 'name', 'open', 'schedules']
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'}
+        }
+
+class RestaurantListSerializer(serializers.ModelSerializer):
+    open = serializers.ReadOnlyField()
+    class Meta:
+        model = Restaurant
+        fields = ['url', 'name', 'open', 'slug']
         lookup_field = 'slug'
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}
