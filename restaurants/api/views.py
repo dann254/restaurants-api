@@ -77,6 +77,10 @@ class RestaurantViewSet(ActionBaseSerializerMixin, StatusFilterMixin):
         open = self.request.query_params.get('is_open')
         f_time = self.request.query_params.get('time')
         weekday = self.request.query_params.get('weekday')
+        search_q = self.request.query_params.get('search_q')
+
+        if search_q:
+            self.queryset = self.queryset.filter(name__icontains=search_q)
 
         if open:
             if open == "True":
