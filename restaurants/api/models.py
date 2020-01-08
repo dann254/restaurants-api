@@ -52,6 +52,30 @@ class Restaurant(models.Model):
             return round(rating/len(reviews), 1)
         return 0.0
 
+    @property
+    def schedule_change(self):
+        """ Next opening or closing time """
+        now = timezone.localtime()
+        current_time = now.time()
+        today = now.isoweekday()
+        schedule = self.schedules.filter(weekday__iso_weekday = today).first()
+        tomorrow_sch = self.tomorrow(today)
+        midnight = datetime.strptime('00:00:00', '%H:%M:%S').time()
+
+        if self.open:
+            if schedule.opening_time > current_time:
+                return  schedule.add_overflow
+            else:
+                return schedule.closing_time
+        else:
+            if schedule is None:
+                return tomorrow_sch.opening_time
+
+            elif schedule.opening_time > current_time:
+                return  schedule.opening_time
+            else:
+                return tomorrow_sch.opening_time
+
     def tomorrow(self, today):
         return self.schedules.filter(weekday__iso_weekday = today+1).first()
 

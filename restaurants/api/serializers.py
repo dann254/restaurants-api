@@ -27,9 +27,11 @@ class RestaurantSerializer(serializers.ModelSerializer):
     open = serializers.ReadOnlyField()
     review_count = serializers.ReadOnlyField()
     rating_average = serializers.ReadOnlyField()
+    schedule_change = serializers.ReadOnlyField()
+
     class Meta:
         model = Restaurant
-        fields = ['url', 'name', 'open','slug', 'review_count', 'rating_average', 'reviews', 'schedules']
+        fields = ['url', 'name', 'open','slug', 'review_count', 'rating_average', 'schedule_change', 'reviews', 'schedules']
         lookup_field = 'slug'
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}
@@ -40,9 +42,11 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     open = serializers.ReadOnlyField()
     review_count = serializers.ReadOnlyField()
     rating_average = serializers.ReadOnlyField()
+    schedule_change = serializers.ReadOnlyField()
+
     class Meta:
         model = Restaurant
-        fields = ['url', 'name', 'open', 'slug', 'review_count', 'rating_average']
+        fields = ['url', 'name', 'open', 'slug', 'review_count', 'rating_average', 'schedule_change']
         lookup_field = 'slug'
         extra_kwargs = {
             'url': {'lookup_field': 'slug'}
