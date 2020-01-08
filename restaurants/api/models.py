@@ -88,3 +88,6 @@ class Review(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     restaurant = models.ForeignKey(Restaurant, related_name='reviews', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['-created']
