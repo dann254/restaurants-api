@@ -20,6 +20,7 @@ class Restaurant(models.Model):
         today = now.isoweekday()
         schedule = self.schedules.filter(weekday__iso_weekday = today).first()
         midnight = datetime.strptime('00:00:00', '%H:%M:%S').time()
+        _day_end = datetime.strptime('23:59:59', '%H:%M:%S').time()
 
         if schedule is None:
             return False
@@ -28,13 +29,13 @@ class Restaurant(models.Model):
             if current_time >= schedule.opening_time and current_time < schedule.closing_time:
                 return True
 
-        elif schedule.add_overflow:
+        if schedule.add_overflow:
             if current_time >= midnight and current_time <= schedule.add_overflow:
                 return True
 
-        else:
-            if current_time >= schedule.opening_time and current_time < midnight:
-                return True
+        if current_time >= schedule.opening_time and current_time <= _day_end:
+            return True
+            
         return False
 
     @property
@@ -60,7 +61,6 @@ class Restaurant(models.Model):
         today = now.isoweekday()
         schedule = self.schedules.filter(weekday__iso_weekday = today).first()
         tomorrow_sch = self.tomorrow(today)
-        midnight = datetime.strptime('00:00:00', '%H:%M:%S').time()
 
         if self.open:
             if schedule.opening_time > current_time:
