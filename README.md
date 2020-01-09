@@ -7,7 +7,7 @@ Know restaurant schedules and review restaurants you've visited.
 
 ### Relevant Links
 - [Staging](http://rest-aurants-api.herokuapp.com/)
-- [Front-end](#)
+- [Front-end](https://github.com/dann254/restaurants-angular)
 
 ## How to set up
 - Make sure you have **python3** installed.
