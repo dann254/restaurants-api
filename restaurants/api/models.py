@@ -28,14 +28,14 @@ class Restaurant(models.Model):
         if schedule.opening_time < schedule.closing_time:
             if current_time >= schedule.opening_time and current_time < schedule.closing_time:
                 return True
+        else:
+            if current_time >= schedule.opening_time and current_time <= _day_end:
+                return True
 
         if schedule.add_overflow:
             if current_time >= midnight and current_time <= schedule.add_overflow:
                 return True
 
-        if current_time >= schedule.opening_time and current_time <= _day_end:
-            return True
-            
         return False
 
     @property
